@@ -1,0 +1,45 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environments
+.venv/
+venv/
+env/
+backend/venv/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# ML datasets and generated patches
+ml/patches/
+data/sar/*.tif
+data/sar/*.tiff
+ml/dataset/
+
+
+# Trained model weights
+ml/models/
+*.pth
+*.pt
+
+# Generated ML output
+ml/output/*.json
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+data/*.csv
