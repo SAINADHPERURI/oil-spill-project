@@ -95,9 +95,9 @@ export default function OilSpillDashboard() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 font-sans p-6">
+    <div className="min-h-screen bg-slate-900 text-slate-100 font-sans p-4">
       {/* Header Panel */}
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-800 pb-4 mb-6 gap-4">
+      <header className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-800 pb-3 mb-4 gap-3">
         <div>
           <div className="flex items-center gap-2">
             <AlertTriangle className="text-amber-500 w-8 h-8 animate-pulse" />
@@ -106,7 +106,7 @@ export default function OilSpillDashboard() {
             </h1>
           </div>
           <p className="text-slate-400 text-sm mt-1">
-            React TypeScript Engine connected to FastAPI Core
+           
           </p>
         </div>
 
@@ -142,12 +142,12 @@ export default function OilSpillDashboard() {
       )}
 
       {/* Primary Workspace Grid */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 items-start">
         
         {/* LEFT COLUMN: TELEMETRY & GEO-DATA */}
-        <div className="space-y-6 xl:col-span-1">
+        <div className="space-y-4 xl:col-span-1">
           {/* Section 1: SAR Sat Output */}
-          <div className="bg-slate-950/60 backdrop-blur-md p-5 rounded-2xl border border-slate-800/80">
+          <div className="bg-slate-950/60 backdrop-blur-md p-4 rounded-2xl border border-slate-800/80">
             <h2 className="text-sm font-semibold tracking-wider text-slate-400 uppercase flex items-center gap-2 mb-4">
               <Layers className="w-4 h-4 text-sky-400" />
               SAR Satellite Segmentation Input
@@ -210,7 +210,7 @@ export default function OilSpillDashboard() {
         {/* CENTER COLUMN: LIVE MAP LEAFLET VIEWPORT CANVAS */}
                 {/* CENTER COLUMN: LIVE MAP LEAFLET VIEWPORT CANVAS */}
         <div className="xl:col-span-1">
-          <div className="bg-slate-950/60 backdrop-blur-md p-4 rounded-2xl border border-slate-800/80 flex flex-col h-[520px]">
+          <div className="bg-slate-950/60 backdrop-blur-md p-4 rounded-2xl border border-slate-800/80 flex flex-col h-[460px]">
             {data ? (
               <SpillMap
                 detectionCenter={[data.detection.centroid.lat, data.detection.centroid.lon]}
@@ -227,13 +227,15 @@ export default function OilSpillDashboard() {
 
         {/* RIGHT COLUMN: RANKED SUSPECT VESSELS */}
         <div className="xl:col-span-1">
-          <div className="bg-slate-950/60 backdrop-blur-md p-5 rounded-2xl border border-slate-800/80 h-full">
+          <div className="bg-slate-950/60 backdrop-blur-md p-5 rounded-2xl border border-slate-800/80 h-[460px] flex flex-col overflow-hidden">
             <h2 className="text-sm font-semibold tracking-wider text-slate-400 uppercase flex items-center gap-2 mb-4">
               <ShieldAlert className="w-4 h-4 text-rose-400" />
               Ranked Suspect Vessels
             </h2>
             {data ? (
-              <VesselList vessels={data.suspects} />
+              <div className="flex-1 overflow-y-auto pr-1">
+  <VesselList vessels={data.suspects} />
+</div>
             ) : (
               <div className="text-slate-600 text-xs py-4 text-center italic">Awaiting attribution scan...</div>
             )}

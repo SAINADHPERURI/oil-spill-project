@@ -1,78 +1,108 @@
-import os
 import time
 import subprocess
-
-SAR_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "data", "sar"))
-ML_DIR = os.path.dirname(os.path.abspath(__file__))
-DETECTION_SCRIPT = os.path.join(ML_DIR, "generate_detection.py")
-OUTPUT_DIR = os.path.join(ML_DIR, "output")
-
-processed = set()
-
-print("🛰️ Oil Spill Detection Watcher Started")
-print(f"📂 Watching: {SAR_DIR}")
-print("⏳ Waiting for new SAR images...\n")
+from pathlib import Path
 
 
-while True:
-    try:
-        files = os.listdir(SAR_DIR)
+PROJECT_ROOT = Path(__file__).resolve().parent.parent
+SAR_DIR = PROJECT_ROOT / "data" / "sar"
 
-        for filename in files:
+PYTHON = PROJECT_ROOT.parent / ".venv" / "Scripts" / "python.exe"
 
-            if not filename.lower().endswith((".tif", ".tiff")):
-                continue
+PREDICT_SCRIPT = PROJECT_ROOT / "ml" / "predict_sar.py"
+DETECT_SCRIPT = PROJECT_ROOT / "ml" / "generate_detection.py"
 
-            if "_image" not in filename:
-                continue
+PREDICTED_MASK = PROJECT_ROOT / "ml" / "output" / "predicted_spill_mask.tif"
 
-            image_path = os.path.join(SAR_DIR, filename)
+OUTPUT_ID = "spill_01"
+
+
+def process_image(image_path):
+
+    print("\n" + "=" * 50)
+    print("NEW SAR IMAGE DETECTED")
+    print("=" * 50)
+    print(f"Image: {image_path.name}")
+
+    # --------------------------------------------------
+    # STEP 1: U-NET PREDICTION
+    # --------------------------------------------------
+
+    print("\n[1/2] Running U-Net prediction...")
+
+    result = subprocess.run(
+    [
+        str(PYTHON),
+        str(PREDICT_SCRIPT),
+    ],
+    cwd=str(PROJECT_ROOT),
+)
+
+    if result.returncode != 0:
+        print("U-Net prediction failed.")
+        return
+
+    if not PREDICTED_MASK.exists():
+        print("Predicted mask was not created.")
+        return
+
+    # --------------------------------------------------
+    # STEP 2: DETECTION
+    # --------------------------------------------------
+
+    print("\n[2/2] Running spill detection...")
+
+    result = subprocess.run(
+        [
+            str(PYTHON),
+            str(DETECT_SCRIPT),
+            "--image",
+            str(image_path),
+            "--mask",
+            str(PREDICTED_MASK),
+            "--output-id",
+            OUTPUT_ID,
+        ],
+        cwd=str(PROJECT_ROOT),
+    )
+
+    if result.returncode != 0:
+        print("Detection failed.")
+        return
+
+    print("\n" + "=" * 50)
+    print("PIPELINE COMPLETE")
+    print("=" * 50)
+
+
+def main():
+
+    print("=" * 50)
+    print(" OIL SPILL SAR WATCHER")
+    print("=" * 50)
+
+    print(f"\nWatching:")
+    print(SAR_DIR)
+
+    processed = set()
+
+    while True:
+
+        images = list(SAR_DIR.glob("*_image.tif"))
+
+        for image_path in images:
 
             if image_path in processed:
                 continue
 
-            scenario = filename.rsplit("_image", 1)[0]
-
-            mask_filename = scenario + "_mask.tif"
-            mask_path = os.path.join(SAR_DIR, mask_filename)
-
-            if not os.path.exists(mask_path):
-                print(f"⚠️ Waiting for mask: {mask_filename}")
-                continue
-
-            output_id = "spill_01"
-
-            print(f"\n🔍 New SAR image detected: {filename}")
-            print(f"📄 Matching mask: {mask_filename}")
-            print("⚙️ Running spill detection...")
-
-            result = subprocess.run(
-                [
-                    os.path.join(
-    os.path.dirname(os.path.dirname(ML_DIR)),
-    ".venv",
-    "Scripts",
-    "python.exe"
-),
-                    DETECTION_SCRIPT,
-                    "--image",
-                    image_path,
-                    "--mask",
-                    mask_path,
-                    "--output-id",
-                    output_id,
-                ],
-                cwd=ML_DIR,
-            )
-
-            if result.returncode == 0:
-                print("✅ Spill analysis completed")
-                print(f"📊 Output: {OUTPUT_DIR}\\{output_id}.json")
+            try:
+                process_image(image_path)
                 processed.add(image_path)
-            else:
-                print("❌ Spill detection failed")
 
-    except Exception as e:
-        print(f"❌ Watcher error: {e}")
+            except Exception as e:
+                print(f"Error processing {image_path.name}: {e}")
 
-    time.sleep(3)
+        time.sleep(5)
+
+
+if __name__ == "__main__":
+    main()
