@@ -182,6 +182,9 @@ export default function OilSpillDashboard() {
               <Compass className="w-4 h-4 text-teal-400" />
               Backward Drift Trajectory Matrix
             </h2>
+            <p className="text-[11px] text-slate-500 italic mt-0.5 mb-3">
+  Origin traced backward from drift — not just current slick position
+</p>
             {data ? (
               <div className="space-y-3 text-sm">
                 <div className="flex justify-between border-b border-slate-900 pb-2">
@@ -232,6 +235,9 @@ export default function OilSpillDashboard() {
               <ShieldAlert className="w-4 h-4 text-rose-400" />
               Ranked Suspect Vessels
             </h2>
+            <p className="text-[11px] text-slate-500 italic mb-4">
+  Scored on proximity + behavior + AIS gaps, not distance alone
+</p>
             {data ? (
               <div className="flex-1 overflow-y-auto pr-1">
   <VesselList vessels={data.suspects} />

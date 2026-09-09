@@ -103,7 +103,15 @@ def main():
         default="spill_01"
     )
 
+    parser.add_argument(
+        "--detected-at",
+        default=None,
+        help="ISO timestamp override, e.g. 2025-01-03T09:00:00Z"
+    )
+
     args = parser.parse_args()
+
+    detected_at = args.detected_at or "2025-01-01T18:00:00Z"
 
     print("=" * 40)
     print(" OIL SPILL DETECTION")
@@ -121,7 +129,7 @@ def main():
         "spill_id": args.output_id,
         "centroid": result["centroid"],
         "area_km2": result["area_km2"],
-        "detected_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+        "detected_at": detected_at,
         "shape": result["shape"],
         "spill_pixels": result["spill_pixels"],
         "source_image": Path(args.image).name,

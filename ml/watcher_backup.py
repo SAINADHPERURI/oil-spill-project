@@ -1,6 +1,5 @@
 import time
 import subprocess
-import re
 from pathlib import Path
 
 
@@ -13,19 +12,6 @@ PREDICT_SCRIPT = PROJECT_ROOT / "ml" / "predict_sar.py"
 DETECT_SCRIPT = PROJECT_ROOT / "ml" / "generate_detection.py"
 
 PREDICTED_MASK = PROJECT_ROOT / "ml" / "output" / "predicted_spill_mask.tif"
-
-
-def derive_detected_at(output_id: str) -> str:
-    """
-    Gives each scenario a distinct, plausible timestamp instead of every
-    spill sharing the exact same detection time. Still stays on
-    2025-01-01 (within the AIS dataset's known coverage), just at a
-    different hour per scenario number.
-    """
-    match = re.search(r"(\d+)", output_id)
-    scenario_num = int(match.group(1)) if match else 1
-    hour = (6 + (scenario_num - 1) * 3) % 24  # spread scenarios ~3hrs apart
-    return f"2025-01-01T{hour:02d}:00:00Z"
 
 
 def process_image(image_path):
@@ -71,9 +57,6 @@ def process_image(image_path):
 
     print("\n[2/2] Running spill detection...")
 
-    detected_at = derive_detected_at(output_id)
-    print(f"Detected at: {detected_at}")
-
     result = subprocess.run(
         [
             str(PYTHON),
@@ -84,8 +67,6 @@ def process_image(image_path):
             str(PREDICTED_MASK),
             "--output-id",
             output_id,
-            "--detected-at",
-            detected_at,
         ],
         cwd=str(PROJECT_ROOT),
     )

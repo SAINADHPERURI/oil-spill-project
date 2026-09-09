@@ -43,3 +43,5 @@ Thumbs.db
 *.log
 
 data/*.csv
+
+ml/output/*.tif

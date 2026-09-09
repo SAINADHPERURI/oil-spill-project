@@ -6,16 +6,16 @@ from dotenv import load_dotenv
 load_dotenv()
 
 # Securely grab the API key from environment variables
-# For the hackathon locally, you can export this or add it to a .env file
-NVIDIA_API_KEY = os.getenv("NVIDIA_API_KEY", "your_mock_key_if_testing")
+# Get a free key at https://aistudio.google.com/apikey
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "your_mock_key_if_testing")
 
 def generate_vessel_explanation(vessel_data: dict, spill_context: dict) -> str:
     """
     Takes structured data about a suspect vessel and generates a human-readable 
-    explanation using NVIDIA NIM describing why the vessel is flagged.
+    explanation using Gemini describing why the vessel is flagged.
     """
     # Fallback response if the API key is not configured yet
-    if not NVIDIA_API_KEY or NVIDIA_API_KEY == "your_mock_key_if_testing":
+    if not GEMINI_API_KEY or GEMINI_API_KEY == "your_mock_key_if_testing":
         return (
             f"Vessel {vessel_data.get('vessel_name')} (MMSI: {vessel_data.get('mmsi')}) "
             f"has a total risk score of {vessel_data.get('total_score')}. It was detected "
@@ -24,10 +24,10 @@ def generate_vessel_explanation(vessel_data: dict, spill_context: dict) -> str:
             f"AIS gap flag: {vessel_data.get('ais_gap_flag')}."
         )
 
-    # Initialize the client pointing to NVIDIA's NIM API base URL
+    # Initialize the client pointing to Gemini's OpenAI-compatible endpoint
     client = openai.OpenAI(
-        base_url="https://nvidia.com",
-        api_key=NVIDIA_API_KEY
+        base_url="https://generativelanguage.googleapis.com/v1beta/openai/",
+        api_key=GEMINI_API_KEY
     )
 
     # Build a structured prompt describing the target telemetry anomalies
@@ -54,15 +54,16 @@ def generate_vessel_explanation(vessel_data: dict, spill_context: dict) -> str:
 
     try:
         completion = client.chat.completions.create(
-            model="meta/llama-3-70b-instruct",
-            messages=[
-                {"role": "system", "content": "You are an expert maritime intelligence investigator evaluating tracking data for environmental non-compliance and illicit oil discharges."},
-                {"role": "user", "content": prompt}
-            ],
-            temperature=0.2,
-            top_p=0.7,
-            max_tokens=150
-        )
+    model="gemini-2.5-flash",
+    reasoning_effort="none",  # Gemini 2.5 "thinks" by default, eating into max_tokens — turn it off
+    messages=[
+        {"role": "system", "content": "You are an expert maritime intelligence investigator evaluating tracking data for environmental non-compliance and illicit oil discharges."},
+        {"role": "user", "content": prompt}
+    ],
+    temperature=0.2,
+    top_p=0.7,
+    max_tokens=200
+)
         return completion.choices[0].message.content.strip()
     except Exception as e:
         return f"Intelligence extraction temporarily offline. Analytics engine baseline score: {vessel_data.get('total_score')}."
