@@ -69,7 +69,7 @@ export default function VesselList({ vessels }: { vessels: SuspectVessel[] }) {
               </div>
             </div>
             <p className="text-[11px] text-slate-500 mt-1">
-              {risk.text} · MMSI {v.mmsi} · {v.vessel_type}
+              {risk.text} Â· MMSI {v.mmsi} Â· {v.vessel_type}
             </p>
 
             {open && (

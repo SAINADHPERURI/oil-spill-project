@@ -59,7 +59,7 @@ def analyze_spill(req: SpillRequest):
     suspects = score_vessels(origin)
 
     # 4. NEW: Loop through top 3 suspects and append NVIDIA NIM intelligence insights
-    for vessel in suspects[:3]:
+    for vessel in suspects:
         explanation = generate_vessel_explanation(vessel, origin)
         vessel["ai_explanation"] = explanation
 

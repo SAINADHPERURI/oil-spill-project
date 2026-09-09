@@ -95,13 +95,13 @@ export default function OilSpillDashboard() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-slate-900 text-slate-100 font-sans p-4">
+    <div className="min-h-screen lg:h-screen bg-slate-900 text-slate-100 font-sans p-3 lg:p-4 overflow-auto lg:overflow-hidden">
       {/* Header Panel */}
-      <header className="flex flex-col md:flex-row justify-between items-start md:items-center border-b border-slate-800 pb-3 mb-4 gap-3">
+      <header className="shrink-0 flex flex-col lg:flex-row justify-between items-start lg:items-center border-b border-slate-800 pb-3 mb-3 lg:mb-4 gap-3">
         <div>
           <div className="flex items-center gap-2">
             <AlertTriangle className="text-amber-500 w-8 h-8 animate-pulse" />
-            <h1 className="text-2xl font-bold tracking-tight bg-gradient-to-r from-slate-100 to-slate-400 bg-clip-text text-transparent">
+            <h1 className="text-xl sm:text-2xl lg:text-2xl font-bold leading-tight tracking-tight bg-gradient-to-r from-slate-100 to-slate-400 bg-clip-text text-transparent">
               OceanGuard: Oil Spill Drift & Attribution Matrix
             </h1>
           </div>
@@ -111,7 +111,7 @@ export default function OilSpillDashboard() {
         </div>
 
         {/* Query Input Section */}
-        <div className="flex items-center gap-3 w-full md:w-auto">
+        <div className="flex items-center gap-2 w-full lg:w-auto shrink-0">
           <div className="relative flex-grow md:flex-grow-0">
             <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-500" />
             <input
@@ -119,7 +119,7 @@ export default function OilSpillDashboard() {
               value={spillId}
               onChange={(e) => setSpillId(e.target.value)}
               placeholder="Enter Spill ID (e.g. spill_01)"
-              className="bg-slate-950 text-slate-200 pl-9 pr-4 py-2 rounded-lg border border-slate-800 focus:outline-none focus:border-amber-500 w-full md:w-64 text-sm transition-all"
+              className="bg-slate-950 text-slate-200 pl-9 pr-4 py-2 rounded-lg border border-slate-800 focus:outline-none focus:border-amber-500 w-full lg:w-52 xl:w-60 text-sm transition-all"
             />
           </div>
           <button
@@ -142,12 +142,12 @@ export default function OilSpillDashboard() {
       )}
 
       {/* Primary Workspace Grid */}
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4 items-start">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 lg:gap-4 items-stretch lg:h-[calc(100vh-155px)] lg:min-h-0">
         
         {/* LEFT COLUMN: TELEMETRY & GEO-DATA */}
-        <div className="space-y-4 xl:col-span-1">
+        <div className="grid grid-rows-2 gap-3 lg:gap-4 lg:min-h-0">
           {/* Section 1: SAR Sat Output */}
-          <div className="bg-slate-950/60 backdrop-blur-md p-4 rounded-2xl border border-slate-800/80">
+          <div className="bg-slate-950/60 backdrop-blur-md p-4 rounded-2xl border border-slate-800/80 min-h-0 overflow-hidden">
             <h2 className="text-sm font-semibold tracking-wider text-slate-400 uppercase flex items-center gap-2 mb-4">
               <Layers className="w-4 h-4 text-sky-400" />
               SAR Satellite Segmentation Input
@@ -177,7 +177,7 @@ export default function OilSpillDashboard() {
           </div>
 
           {/* Section 2: Hydrodynamic Drift Simulation */}
-          <div className="bg-slate-950/60 backdrop-blur-md p-5 rounded-2xl border border-slate-800/80">
+          <div className="bg-slate-950/60 backdrop-blur-md p-4 rounded-2xl border border-slate-800/80 min-h-0 overflow-hidden">
             <h2 className="text-sm font-semibold tracking-wider text-slate-400 uppercase flex items-center gap-2 mb-4">
               <Compass className="w-4 h-4 text-teal-400" />
               Backward Drift Trajectory Matrix
@@ -212,8 +212,8 @@ export default function OilSpillDashboard() {
 
         {/* CENTER COLUMN: LIVE MAP LEAFLET VIEWPORT CANVAS */}
                 {/* CENTER COLUMN: LIVE MAP LEAFLET VIEWPORT CANVAS */}
-        <div className="xl:col-span-1">
-          <div className="bg-slate-950/60 backdrop-blur-md p-4 rounded-2xl border border-slate-800/80 flex flex-col h-[460px]">
+        <div className="lg:col-span-1 min-h-0">
+          <div className="bg-slate-950/60 backdrop-blur-md p-3 rounded-2xl border border-slate-800/80 flex flex-col h-[430px] lg:h-full min-h-0">
             {data ? (
               <SpillMap
                 detectionCenter={[data.detection.centroid.lat, data.detection.centroid.lon]}
@@ -229,8 +229,8 @@ export default function OilSpillDashboard() {
         </div>
 
         {/* RIGHT COLUMN: RANKED SUSPECT VESSELS */}
-        <div className="xl:col-span-1">
-          <div className="bg-slate-950/60 backdrop-blur-md p-5 rounded-2xl border border-slate-800/80 h-[460px] flex flex-col overflow-hidden">
+        <div className="lg:col-span-1 min-h-0">
+          <div className="bg-slate-950/60 backdrop-blur-md p-4 rounded-2xl border border-slate-800/80 h-[430px] lg:h-full flex flex-col min-h-0 overflow-hidden">
             <h2 className="text-sm font-semibold tracking-wider text-slate-400 uppercase flex items-center gap-2 mb-4">
               <ShieldAlert className="w-4 h-4 text-rose-400" />
               Ranked Suspect Vessels
